@@ -1,9 +1,9 @@
 package api
 
 import (
-	"database/sql"
 	"github.com/labstack/echo"
 	log "github.com/sirupsen/logrus"
+	"go-base/client"
 	"go-base/entity"
 	"go-base/mysql"
 	"net/http"
@@ -23,27 +23,22 @@ const (
 	failedCode  int = 500
 )
 
-var db sql.DB
-
 type (
 	// 响应
 	Resp struct {
 		Code int
-		Msg string
+		Msg  string
 		Data interface{}
 	}
 
 	// 分页查询
 	Page struct {
 		Start int
-		Size int
+		Size  int
 	}
-
 )
 
-func init() {
-	db = mysql.Init()
-}
+var db = client.Db
 
 // 服务健康检查接口
 func check(c echo.Context) error {
@@ -55,7 +50,7 @@ func saveRover(c echo.Context) error {
 	// 绑定POST请求参数
 	c.Bind(&req)
 
-	err, _ := mysql.Save(db, &req)
+	_, err := mysql.Save(&req)
 	if err != nil {
 		return err
 	}
@@ -66,12 +61,12 @@ func getRoverById(c echo.Context) error {
 	// 获取url参数
 	id := c.Param("id")
 	var idInt, err = strconv.Atoi(id)
-	if err !=nil {
+	if err != nil {
 		log.Infof("%v转string失败", id)
 		return nil
 	}
 	log.Infof("getRoverById executing, id:%v", id)
-	rover := mysql.QueryById(db, idInt)
+	rover := mysql.QueryById(idInt)
 
 	return c.JSON(http.StatusOK, rover)
 }
@@ -86,8 +81,7 @@ func getRoverById2(c echo.Context) error {
 	}
 
 	log.Infof("getRoverById2 executing, id:%v", id)
-	rover := mysql.QueryById(db, idInt)
+	rover := mysql.QueryById(idInt)
 
 	return c.JSON(http.StatusOK, rover)
 }
-

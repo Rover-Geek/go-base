@@ -9,8 +9,19 @@ package entity
 type (
 	// 数据库实体映射
 	Rover struct {
-	Id   int
-	Name string
-	Pass string
+		Id   int
+		Name string
+		Pass string
+		Dog  Dog
+	}
+
+	User struct {
+		UserId string `json:"user_id"`
+		Status int64  `json:"status"`
+	}
+
+	Dog struct {
+		No   int64
+		Name string
 	}
 )

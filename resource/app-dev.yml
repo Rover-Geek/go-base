@@ -1,0 +1,21 @@
+
+app.name: go-base
+port: 8082
+
+# mysql
+mysql:
+  username: root
+  password: mysql123**
+  network: tcp
+  server: 47.104.80.171
+  dbPort: 3306
+  database: db1
+
+redis:
+  username: redis
+  password: redis123**
+  server: 47.104.80.171
+  port: 6379
+
+logger:
+  filename: /Users/rover/Desktop/logs/go-base

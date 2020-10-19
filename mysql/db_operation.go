@@ -3,6 +3,7 @@ package mysql
 import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
+	"go-base/client"
 	"go-base/entity"
 	"log"
 )
@@ -13,43 +14,42 @@ import (
  * @date: 2020/8/30 12:24 上午
  */
 
-var db sql.DB
+var db *sql.DB
 
-// 数据库初始化
-func init() {
-	db = Init()
+func Init() {
+	db = client.Db
 }
 
-func Save(db sql.DB, rover *entity.Rover) (error, int64) {
+func Save(rover *entity.Rover) (int64, error) {
 	result, err := db.Exec("insert into rover (name, pass) values (?, ?)", rover.Name, rover.Pass)
 	if err != nil {
 		log.Printf("数据库新增数据失败，%v", err)
-		return err, -1
+		return -1, err
 	}
 	// 获取刚刚新增的自增ID
 	id, err := result.LastInsertId()
 	if err != nil {
 		log.Printf("数据库新增数据失败，%s", err)
-		return err, -1
+		return -1, err
 	}
 	log.Printf("数据库新增返回的ID:%v", id)
 
-	return nil, id
+	return id, nil
 }
 
 // 查询单条数据
-func QueryById(db sql.DB, id int) *entity.Rover {
+func QueryById(id int) *entity.Rover {
 	rover := new(entity.Rover)
 	row := db.QueryRow("select * from rover where id = ?", id)
 	err := row.Scan(&rover.Id, &rover.Name, &rover.Pass)
-	
+
 	if err != nil {
 		log.Printf("查询数据失败，id:%s,%v", id, err)
 	}
 	return rover
 }
 
-func QueryList(db sql.DB, id int) []*entity.Rover {
+func QueryList(id int) []*entity.Rover {
 	arr := make([]*entity.Rover, 0)
 	rows, err := db.Query("select * from rover where id > ?", id)
 	if err != nil {
